@@ -98,10 +98,59 @@ read_vm_from_file() {
     fi
 }
 
+validate_ip() {
+    local ip=$1 # This line declares a local variable ip and assigns it the value of the first command-line argument passed to the function.
+    local stat=1 # This line declares a local variable stat and initializes it to 1. This variable will be used to track the status of the validation.
+
+    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        OIFS=$IFS
+        IFS='.' 
+        ip=($ip)
+        IFS=$OIFS # This line splits the IP address into its four components (octets) using the dot (.) as a delimiter. It does this by temporarily setting the internal field separator (IFS) to a dot and then splitting the IP address into an array using the () syntax.
+        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]] # This line checks if each octet of the IP address is within the valid range of 0 to 255.
+        stat=$? # This line sets the stat variable to the exit status of the last command. If the IP address is valid, stat will be 0; otherwise, it will be 1.
+    fi
+    return $stat # This line returns the stat variable, which indicates whether the IP address is valid or not.
+}
+
+validate_subnetmask() {
+  local subnetmask=$1
+
+  if [[ $subnetmask -ge 1 && $subnetmask -le 32 ]]; then # This line checks if the subnet mask is within the valid range of 1 to 32. The subnet mask is typically represented as a number from 1 to 32, where 1 represents a full subnet and 32 represents a single host.
+    return 0 # If the subnet mask is within the valid range, the function returns a status code of 0, indicating that the subnet mask is valid.
+  else
+    return 1 # If the subnet mask is not within the valid range, the function returns a status code of 1, indicating that the subnet mask is invalid.
+  fi
+}
+
+# Validate memory size
+validate_memory() {
+    if [[ $memory_size_kb =~ ^[0-9]+$ ]]; then
+        Print2Log "Entered memory size: $memory_size_kb"
+        if (( $memory_size_kb < 1024 )); then
+            Print2Log "Memory size is less than 1024 KB."
+            echo -ne "Memory size is less than 1024 KB.\n"
+            exit 1
+        fi
+    else
+        Print2Log "Invalid memory size."
+        echo -ne "Invalid memory size.\n"
+        exit 1
+    fi
+}
+# Validate disk size
+validate_disksize(){
+    if [[ $disk_size_gb =~ ^[0-9]+$ ]]; then
+        Print2Log "Entered disk size: $disk_size_gb"
+        if (( $disk_size_gb < 1 )); then
+            Print2Log "Disk size is less than 1 GB."
+            echo -ne "Disk size is less than 1 GB.\n"
+            exit 1
+        fi
+    else
+        Print2Log "Invalid disk size."
+        echo -ne "Invalid disk size.\n"
+        exit 1
+    fi
+}
 virt-install --name $vmname --memory $memory_size_kb --vcpus $vcpus --disk size="$disk_size_gb" --os-variant rhel9.4 --import -l /var/lib/libvirt/images/CPE-RHEL-9.4-x86_64.290520241942.iso   --graphics none --extra-args="inst.ks=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64:/ks.cfg console=tty0 console=ttyS0,115200n8 inst.repo=cdrom" --network=bridge:bridge0 --extra-args "$ipadress::$gateway:$netmask:test.example.com:enp1s0:none" --check disk_size=off
-
-
-
-
-
-
