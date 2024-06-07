@@ -21,7 +21,43 @@ if [[ "$#" -ne 1 || -z $1 ]]; then
 fi
 
 # Assign arguments to variables
-input_file=$1
+file=$1
+
+main (){
+
+read_ip_from_file $file
+
+Print2Log "Entered IPv4 address: $ipaddress"
+
+if validate_ip $ipaddress; then
+    Print2Log "${ipaddress} is a valid IPv4 address."
+else
+    Print2Log "${ipaddress} is a invalid IPv4 address."
+    echo -ne "${ipaddress} is a invalid IPv4 address.\n"
+    exit 1
+fi
+
+Print2Log "Entered subnetmask: $netmask"
+
+if validate_subnetmask $netmask; then
+    Print2Log "The subnet mask $netmask is valid."
+else
+    Print2Log "The subnet mask $netmask is not valid."
+    echo -ne "The subnet mask $netmask is not valid.\n"
+   exit 1
+fi
+
+
+Print2Log "Entered IPv4 gateway address: $gateway"
+
+if validate_ip $gateway; then
+    Print2Log "${gateway} is a valid IPv4 gateway address."
+else
+    Print2Log "${gateway} is a invalid IPv4 gateway address."
+    echo -ne "${gateway} is a invalid IPv4 gateway address.\n"
+    exit 1
+fi
+}
 
 # Initialize variables
 vm_name=$(awk -F'=' '/vm_name/ {print $2}' "$1")
@@ -33,61 +69,12 @@ ip_address=$(awk -F'=' '/ip_address/ {print $2}' "$1")
 netmask=$(awk -F'=' '/netmask/ {print $2}' "$1")
 gateway=$(awk -F'=' '/gateway/ {print $2}' "$1")
 
-# Read the input file
-while IFS='=' read -r key value
-do
-    case $key in
-        "vm_name") vm_name="$value" ;;
-        "memory_size_kb") memory_size_kb="$value" ;;
-        "vcpus") vcpus="$value" ;;
-        "disk_size_gb") disk_size_gb="$value" ;;
-        "iso_name") iso_name="$value" ;;
-        "ip_address") ip_address="$value" ;;
-        "netmask") netmask="$value" ;;
-        "gateway") gateway="$value" ;;
-    esac
-done < "$input_file"
-
 # Check if the required variables are set
-if [ -z "$vm_name" ]; then
-    Print2Log "Error: VM name cannot be empty."
+if [[ -z "$vm_name" || -z "$memory_size_kb" || -z "$vcpus" || -z "$disk_size_gb" || -z "$iso_name" || -z "$ip_address" || -z "$netmask" || -z "$gateway" ]]; then
+    Print2Log "Error: input_file cannot be empty."
     exit 1
 fi
 
-if [ -z "$memory_size_kb" ]; then
-    Print2Log "Error: Memory size cannot be empty."
-    exit 1
-fi
 
-if [ -z "$vcpus" ]; then
-    Print2Log "Error: Number of vCPUs cannot be empty."
-    exit 1
-fi
 
-if [ -z "$disk_size_gb" ]; then
-    Print2Log "Error: Disk size cannot be empty."
-    exit 1
-fi
 
-if [ -z "$iso_name" ]; then
-    Print2Log "Error: ISO name cannot be empty."
-    exit 1
-fi
-
-if [ -z "$ip_address" ]; then
-    Print2Log "Error: IP address cannot be empty."
-    exit 1
-fi
-
-if [ -z "$netmask" ]; then
-    Print2Log "Error: Netmask cannot be empty."
-    exit 1
-fi
-
-if [ -z "$gateway" ]; then
-    Print2Log "Error: Gateway cannot be empty."
-    exit 1
-fi
-
-# Run the virt-install command
-virt-install --name "$vm_name" --memory "$memory_size_kb" --vcpus "$vcpus" --disk size="$disk_size_gb"  --os-variant "rhel9.0" --import -l "$iso_name" --graphics none --extra-args="inst.ks=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64:/ks.cfg console=tty0 console=ttyS0,115200n8 inst.repo=cdrom" --network network=default --check disk_size=off >> "$logfile"
