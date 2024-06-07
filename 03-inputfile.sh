@@ -1,8 +1,8 @@
-vm_name=
+vmname=
 memory_size_kb=
 vcpus=
 disk_size_gb=
 iso_name=
-ip_address=
+ipaddress=
 netmask=
 gateway=
