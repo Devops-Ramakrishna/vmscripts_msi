@@ -123,6 +123,16 @@ validate_subnetmask() {
   fi
 }
 
+#validate gateway
+validate_gateway(){
+    local gateway=$1
+    if [[ $gateway == "10.81.75.254" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Validate memory size
 validate_memory() {
     if [[ $memory_size_kb =~ ^[0-9]+$ ]]; then
