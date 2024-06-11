@@ -24,8 +24,13 @@ fi
 input_file=$1
 
 main (){
-
 read_vm_from_file $input_file
+# Validate vCPUs
+    if [ $vcpus -gt 8 ]; then # above 8 it should not work
+        Print2Log "Number of vCPUs is greater than 8."
+        echo -ne "Number of vCPUs is greater than 8.\n"
+        exit 1
+    fi
 
 Print2Log "Entered memory_size_kb : $memory_size_kb"
 
@@ -137,7 +142,7 @@ validate_gateway(){
 validate_memory() {
     if [[ $memory_size_kb =~ ^[0-9]+$ ]]; then
         Print2Log "Entered memory size: $memory_size_kb"
-        if (( $memory_size_kb < 1024 )); then
+        if (( $memory_size_kb < 1024 )); then 
             Print2Log "Memory size is less than 1024 KB."
             echo -ne "Memory size is less than 1024 KB.\n"
             exit 1
@@ -148,13 +153,6 @@ validate_memory() {
         exit 1
     fi
 }
-
-# Validate vCPUs
-    if [ $vcpus -gt 8 ]; then
-        Print2Log "Number of vCPUs is greater than 8."
-        echo -ne "Number of vCPUs is greater than 8.\n"
-        exit 1
-    fi
 
 # Validate disk size
 validate_disksize(){
