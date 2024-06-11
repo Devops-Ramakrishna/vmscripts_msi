@@ -171,4 +171,8 @@ validate_disksize(){
         exit 1
     fi
 }
+
+# Run the script
+main $input_file
+
 virt-install --name $vmname --memory $memory_size_kb --vcpus $vcpus --disk size="$disk_size_gb" --os-variant rhel9.4 --import -l /var/lib/libvirt/images/CPE-RHEL-9.4-x86_64.290520241942.iso   --graphics none --extra-args="inst.ks=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64:/ks.cfg console=tty0 console=ttyS0,115200n8 inst.repo=cdrom" --network=bridge:bridge0 --extra-args "$ipadress::$gateway:$netmask:test.example.com:enp1s0:none" --check disk_size=off
