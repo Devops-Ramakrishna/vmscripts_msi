@@ -148,6 +148,14 @@ validate_memory() {
         exit 1
     fi
 }
+
+# Validate vCPUs
+    if [ $vcpus -gt 8 ]; then
+        Print2Log "Number of vCPUs is greater than 8."
+        echo -ne "Number of vCPUs is greater than 8.\n"
+        exit 1
+    fi
+
 # Validate disk size
 validate_disksize(){
     if [[ $disk_size_gb =~ ^[0-9]+$ ]]; then
