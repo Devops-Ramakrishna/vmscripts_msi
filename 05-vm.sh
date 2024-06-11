@@ -142,7 +142,7 @@ validate_gateway(){
 validate_memory() {
     if [[ $memory_size_kb =~ ^[0-9]+$ ]]; then
         Print2Log "Entered memory size: $memory_size_kb"
-        if (( $memory_size_kb < 1024 )); then 
+        if (( $memory_size_kb < 131072 )); then 
             Print2Log "Memory size is less than 1024 KB."
             echo -ne "Memory size is less than 1024 KB.\n"
             exit 1
@@ -158,7 +158,7 @@ validate_memory() {
 validate_disksize(){
     if [[ $disk_size_gb =~ ^[0-9]+$ ]]; then
         Print2Log "Entered disk size: $disk_size_gb"
-        if (( $disk_size_gb < 1 )); then
+        if (( $disk_size_gb < 50 )); then
             Print2Log "Disk size is less than 1 GB."
             echo -ne "Disk size is less than 1 GB.\n"
             exit 1
