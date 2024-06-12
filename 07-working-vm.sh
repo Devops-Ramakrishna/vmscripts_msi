@@ -138,7 +138,7 @@ validate_gateway(){
         IFS='.'
         gateway=($gateway)
         IFS=$OIFS
-        [[ ${gateway[0]} -le 255 && ${gateway[1]} -le 255 && ${gateway[2]} -le 255 && ${gateway[3]} -eq 255 ]]
+        [[ ${gateway[0]} -le 255 && ${gateway[1]} -le 255 && ${gateway[2]} -le 255 && ${gateway[3]} -le 255 ]]
         stat=$?
     fi
 
