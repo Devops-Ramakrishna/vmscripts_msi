@@ -1,6 +1,6 @@
 #!/bin/bash
-currnetdir=/root
-logfile=$currnetdir/network_config.log
+currnetdir=$PWD
+logfile=$currnetdir/lauch_podman.log
 
 Print2Log()
 {
