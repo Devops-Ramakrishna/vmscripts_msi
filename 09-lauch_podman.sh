@@ -30,7 +30,7 @@ download_image() {
 create_container() {
   echo " Starting to create container for httpd"
   sudo podman volume create httpd
-  podman run -dt -p 8080:80/tcp docker.io/library/httpd
+  podman run -dt -p 8080:80/tcp --name my-httpd-container docker.io/library/httpd
   echo " container has been lauched successfully "
 }
 
