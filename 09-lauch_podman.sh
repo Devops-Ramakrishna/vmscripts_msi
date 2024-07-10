@@ -21,7 +21,7 @@ file_path="$PWD/podman_credentials.ini"
 download_image() {
     username=$(sudo cat "$file_path" | grep -i username | awk -F '=' '{print $NF}' | tr -d '\n')
     password=$(sudo cat "$file_path" | grep -i password | awk -F '=' '{print $NF}' | tr -d '\n')
-    podman login -u $username -p $password
+    podman login registry.connect.redhat.com -u $username -p $password
     echo " podman login successfully completed "
     sudo podman pull docker.io/library/httpd:latest
     echo " images has been downloaded from registry "
