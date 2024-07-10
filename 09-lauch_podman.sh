@@ -36,3 +36,5 @@ create_container() {
 
 download_image
 create_container
+
+echo "Script execution completed."
