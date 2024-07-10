@@ -38,11 +38,11 @@ create_container() {
     echo " Starting to create container for httpd"
 
     # Check if the container is already running
-    if sudo podman ps -a | awk -v name="httpd" '$NF == name {found=1} END{if(found) exit 0; else exit 1}'; then
+    if sudo podman ps -a | awk -v NAMES="my-httpd-container" '$NF == NAMES {found=1} END{if(found) exit 0; else exit 1}'; then
         echo "Container 'httpd' already exists. Skipping container creation."
     else
         sudo podman volume create httpd
-        podman run -dt -p 8080:80/tcp docker.io/library/httpd
+        podman run -dt -p 8080:80/tcp --name my-httpd-container docker.io/library/httpd
         echo " Container has been launched successfully "
     fi
 }
