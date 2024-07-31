@@ -39,6 +39,12 @@ if [[ ! -d "$container_files_path" ]]; then
     exit 1
 fi
 
+# Check if .container files already exist in the systemd path
+if ls "$systemd_path"/*.container 1> /dev/null 2>&1; then
+    Print2Log "Error: .container files already exist in $systemd_path. Exiting."
+    exit 1
+fi
+
 if cp "$container_files_path"/*.container "$systemd_path"; then
     Print2Log "Successfully copied .container files to $systemd_path." >> "$logfile"
 else
