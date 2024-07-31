@@ -2,7 +2,7 @@
 
 # Set the current directory and log file
 current_dir=$PWD
-logfile="$current_dir/latest_script.log"
+logfile="$current_dir/script.log"
 
 # Function to print messages to the log file with timestamp
 Print2Log() {
@@ -13,7 +13,6 @@ Print2Log() {
 # Define variables
 tar_file="/root/containers.tar.gz"
 extract_path="/root"
-service="my_service_name"
 
 # Check if the tar file exists
 if [[ ! -f "$tar_file" ]]; then
@@ -38,13 +37,11 @@ if [[ ! -d "$container_files_path" ]]; then
     Print2Log "Error: Container files directory $container_files_path does not exist." >> "$logfile"
     exit 1
 fi
-
 # Check if .container files already exist in the systemd path
 if ls "$systemd_path"/*.container 1> /dev/null 2>&1; then
-    Print2Log "Error: .container files already exist in $systemd_path. Exiting."
+    Print2Log "Error: .container files already exist in $systemd_path. Exiting." "$logfile"
     exit 1
 fi
-
 if cp "$container_files_path"/*.container "$systemd_path"; then
     Print2Log "Successfully copied .container files to $systemd_path." >> "$logfile"
 else
@@ -60,12 +57,15 @@ else
     exit 1
 fi
 
-# 4. Start the service
-if systemctl start "$service"; then
-    Print2Log "Successfully started $service." >> "$logfile"
-else
-    Print2Log "Error: Failed to start $service." >> "$logfile"
-    exit 1
-fi
+# 4. Start the services
+services=("cpe-connector" "cpe-operator")
 
+for service in "${services[@]}"; do
+    if systemctl start "$service"; then
+        Print2Log "Successfully started $service."
+    else
+        Print2Log "Error: Failed to start $service."
+        exit 1
+    fi
+done
 Print2Log "Script execution completed successfully."
