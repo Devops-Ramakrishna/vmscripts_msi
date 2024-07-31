@@ -1,6 +1,6 @@
 #!/bin/bash
 
-currnetdir=/root
+currnetdir=$PWD
 logfile=$currnetdir/network_config.log
 file=$1
 
@@ -21,79 +21,98 @@ usage="\t Wrong option Given, Usage: sh $0 $1\n
 
 main (){
 
+
 read_ip_from_file $file
 
-Print2Log "Entered IPv4 address: $ipaddress"
+if [ "$method" == "static" ]; then
 
-if validate_ip $ipaddress; then
-    Print2Log "${ipaddress} is a valid IPv4 address."
+    Print2Log "Entered IPv4 address: $ipaddress"
+
+    if validate_ip $ipaddress; then
+        Print2Log "${ipaddress} is a valid IPv4 address."
+    else
+        Print2Log "${ipaddress} is a invalid IPv4 address."
+        echo -ne "${ipaddress} is a invalid IPv4 address.\n"
+        exit 1
+    fi
+
+    Print2Log "Entered subnetmask: $netmask"
+
+    if validate_subnetmask $netmask; then
+        Print2Log "The subnet mask $netmask is valid."
+    else
+        Print2Log "The subnet mask $netmask is not valid."
+        echo -ne "The subnet mask $netmask is not valid.\n"
+       exit 1
+    fi
+
+
+    Print2Log "Entered IPv4 gateway address: $gateway"
+
+    if validate_ip $gateway; then
+        Print2Log "${gateway} is a valid IPv4 gateway address."
+    else
+        Print2Log "${gateway} is a invalid IPv4 gateway address."
+        echo -ne "${gateway} is a invalid IPv4 gateway address.\n"
+        exit 1
+    fi
+
+
+    Print2Log "Entered IPv4 dnsserverip address: $dnsserverip"
+
+    if validate_ip $dnsserverip; then
+        Print2Log "${dnsserverip} is a valid IPv4 dnsserverip address."
+    else
+        Print2Log "${dnsserverip} is a invalid IPv4 dnsserverip address."
+        echo -ne "${gateway} is a invalid IPv4 dnsserverip address.\n"
+        exit 1
+    fi
+
+    Print2Log "Verify if Active network interface is available"
+    validate_interface
+    if [ $? -eq 0 ]; then
+        Print2Log "Active network interface is: $interface"
+    else
+        Print2Log "No active network interface found."
+        echo -ne "No active network interface found.... please check the virtaul manchine network configuration\n"
+        exit 1
+    fi
+
+
+    if check_file_exists $interface; then
+        Print2Log "File $interface exists."
+    else
+       Print2Log "File $interface does not exist."
+    fi
+
+
+    update_network_config $ipaddress $netmask $gateway $interface $dnsserverip
+
+    restart_network_manager
+
+    #down_network_connection $interface
+
+    up_network_connection $interface
+
+    obs_prereq
+
+    install_filebeat
+
+    install_telemetry
+
+elif [ "$method" == "dhcp" ]; then
+
+    obs_prereq
+
+    install_filebeat
+
+    install_telemetry
+
 else
-    Print2Log "${ipaddress} is a invalid IPv4 address."
-    echo -ne "${ipaddress} is a invalid IPv4 address.\n"
+    Print2Log "Error: Invalid 'method' value in the interface.ini file. Allowed values are 'static' or 'dhcp'."
+    echo "Error: Invalid 'method' value in the interface.ini file. Allowed values are 'static' or 'dhcp'."
     exit 1
 fi
-
-Print2Log "Entered subnetmask: $netmask"
-
-if validate_subnetmask $netmask; then
-    Print2Log "The subnet mask $netmask is valid."
-else
-    Print2Log "The subnet mask $netmask is not valid."
-    echo -ne "The subnet mask $netmask is not valid.\n"
-   exit 1
-fi
-
-
-Print2Log "Entered IPv4 gateway address: $gateway"
-
-if validate_ip $gateway; then
-    Print2Log "${gateway} is a valid IPv4 gateway address."
-else
-    Print2Log "${gateway} is a invalid IPv4 gateway address."
-    echo -ne "${gateway} is a invalid IPv4 gateway address.\n"
-    exit 1
-fi
-
-
-Print2Log "Entered IPv4 dnsserverip address: $dnsserverip"
-
-if validate_ip $dnsserverip; then
-    Print2Log "${dnsserverip} is a valid IPv4 dnsserverip address."
-else
-    Print2Log "${dnsserverip} is a invalid IPv4 dnsserverip address."
-    echo -ne "${gateway} is a invalid IPv4 dnsserverip address.\n"
-    exit 1
-fi
-
-Print2Log "Verify if Active network interface is available"
-validate_interface
-if [ $? -eq 0 ]; then
-    Print2Log "Active network interface is: $interface"
-else
-    Print2Log "No active network interface found."
-    echo -ne "No active network interface found.... please check the virtaul manchine network configuration\n"
-    exit 1
-fi
-
-
-if check_file_exists $interface; then
-    Print2Log "File $interface exists."
-else
-   Print2Log "File $interface does not exist."
-fi
-
-
-update_network_config $ipaddress $netmask $gateway $interface $dnsserverip
-
-restart_network_manager
-
-down_network_connection $interface
-
-up_network_connection $interface
-
-install_filebeat
-
-install_telemetry
 
 }
 
@@ -104,6 +123,7 @@ read_ip_from_file() {
         netmask=$(cat "$file_path" | grep -i netmask | awk -F '=' '{print $NF}' | tr -d '\n')
         gateway=$(cat "$file_path" | grep -i gateway | awk -F '=' '{print $NF}' | tr -d '\n')
         dnsserverip=$(cat "$file_path" | grep -i dnsserverip | awk -F '=' '{print $NF}' | tr -d '\n')
+        method=$(cat "$file_path" | grep -i method | awk -F '=' '{print $NF}' | tr -d '\n')
     else
         echo "File not found: $file_path"
         exit 1
@@ -196,23 +216,33 @@ up_network_connection() {
     Print2Log "Printing ipaddress assigned to $iface"
     ip address | grep $iface >> $logfile
 }
+obs_prereq(){
+        Print2Log "Copying file containers.conf to /etc/containers/" >> $logfile
+        sudo cp /usr/share/containers/containers.conf /etc/containers/
+        if [ $? -eq 0 ]; then
+           Print2Log "Copy operation successful" >> $logfile
+        else
+           Print2Log "Copy operation failed" >> $logfile
+           exit 1
+        fi
 
+        sudo sed -i 's/^log_driver = "k8s-file"/log_driver = "journald"/' /etc/containers/containers.conf
+        sudo sed -i 's/^#events_logger = "journald"/events_logger = "journald"/' /etc/containers/containers.conf
+        sudo sed -i 's/^events_logger = "file"/#events_logger = "file"/' /etc/containers/containers.conf
+        Print2Log "Updating log_driver and events_logger in /etc/containers/containers.conf" >> $logfile
+}
 install_filebeat(){
-        sudo install_filebeat --filebeat_version 8.13.4
+        sudo bash $currnetdir/filebeat-install-edge.sh
         if [ $? -ne 0 ];then
             exit 1
         else
             Print2Log "Filebeat installation successful"
-            Print2Log "Removing filebeat rpm"
-            file=$(find "$PWD" -type f -name "filebeat*.rpm")
-            Print2Log "Found $file at $PWD, removing $file"
-            find "$PWD" -type f -name "filebeat*.rpm" -delete
         fi
 }
 
 
 install_telemetry(){
-        sudo install_telemetry
+        sudo bash $currnetdir/install_telemetry.sh
         if [ $? -ne 0 ];then
            exit 1
         else
