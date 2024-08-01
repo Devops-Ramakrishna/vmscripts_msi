@@ -32,3 +32,4 @@ if podman login "$registry" -u "$username" -p "$password"; then
     fi
 }
 download_image
+Print2Log "Script execution completed successfully."
