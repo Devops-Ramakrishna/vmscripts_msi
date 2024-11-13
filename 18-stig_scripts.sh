@@ -697,7 +697,6 @@ sudo cp "$SYSCTL_CONF" "$SYSCTL_CONF.bak"
     echo "kernel.dmesg_restrict=1"
     echo "kernel.perf_event_paranoid=2"
     echo "kernel.kexec_load_disabled=1"
-    echo "user.max_user_namespaces=0"
 } | sudo tee "$SYSCTL_CONF" > /dev/null
 
 # Check if the command was successful
@@ -720,3 +719,8 @@ else
 fi
 
 echo "All changes have been applied successfully."
+
+# V-230471
+sudo chmod 0640 /etc/audit/rules.d/audit.rules
+sudo chmod 0640 /etc/audit/rules.d/audit.rules
+sudo chmod 0640 /etc/audit/auditd.conf
