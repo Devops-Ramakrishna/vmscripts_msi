@@ -676,3 +676,47 @@ fi
 else
     >&2 echo 'Remediation is not applicable, nothing was done'
 fi
+
+# V-230537, V-230540, V-230541, V-230542, V-230545, V-230546, V-230280, V-230311, V-230269, V-230270, V-230266, V-230548
+# Define the sysctl configuration file
+SYSCTL_CONF="/etc/sysctl.conf"
+
+# Backup the original sysctl.conf file
+sudo cp "$SYSCTL_CONF" "$SYSCTL_CONF.bak"
+
+# Add or update the required lines in /etc/sysctl.conf
+{
+    echo "net.ipv4.icmp_echo_ignore_broadcasts=1"
+    echo "net.ipv6.conf.all.forwarding=0"
+    echo "net.ipv6.conf.all.accept_ra=0"
+    echo "net.ipv6.conf.default.accept_ra=0"
+    echo "kernel.unprivileged_bpf_disabled=1"
+    echo "kernel.yama.ptrace_scope=1"
+    echo "kernel.randomize_va_space=2"
+    echo "kernel.core_pattern=|/bin/false"
+    echo "kernel.dmesg_restrict=1"
+    echo "kernel.perf_event_paranoid=2"
+    echo "kernel.kexec_load_disabled=1"
+    echo "user.max_user_namespaces=0"
+} | sudo tee "$SYSCTL_CONF" > /dev/null
+
+# Check if the command was successful
+if [ $? -eq 0 ]; then
+    echo "Sysctl parameters have been added/updated successfully."
+else
+    echo "Failed to update sysctl parameters."
+    exit 1
+fi
+
+# Reload sysctl settings
+sudo sysctl --system
+
+# Check if the reload command was successful
+if [ $? -eq 0 ]; then
+    echo "Sysctl settings reloaded successfully."
+else
+    echo "Failed to reload sysctl settings."
+    exit 1
+fi
+
+echo "All changes have been applied successfully."
