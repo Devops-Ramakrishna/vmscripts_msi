@@ -96,14 +96,6 @@ fi
 # Reload the auditd service to apply changes using augenrules
 sudo augenrules --load
 
-# Check if augenrules command was successful
-if [ $? -eq 0 ]; then
-    echo "Successfully reloaded audit rules."
-else
-    echo "Failed to reload audit rules with augenrules."
-    exit 1
-fi
-
 echo "Core dumps have been disabled for all users."
 
 # Remediation is applicable only in certain platforms
@@ -400,14 +392,6 @@ fi
 # Reload the auditd service to apply changes using augenrules
 sudo augenrules --load
 
-# Check if augenrules command was successful
-if [ $? -eq 0 ]; then
-    echo "Successfully reloaded audit rules."
-else
-    echo "Failed to reload audit rules with augenrules."
-    exit 1
-fi
-
 echo "Audit configuration updated and service reloaded."
 
 # Define the configuration file
@@ -433,14 +417,6 @@ fi
 
 # Reload the auditd service to apply changes using augenrules
 sudo augenrules --load
-
-# Check if augenrules command was successful
-if [ $? -eq 0 ]; then
-    echo "Successfully reloaded audit rules."
-else
-    echo "Failed to reload audit rules with augenrules."
-    exit 1
-fi
 
 echo "Audit configuration updated and service reloaded."
 
@@ -566,14 +542,6 @@ fi
 
 # Reload audit rules using augenrules
 sudo augenrules --load
-
-# Check if augenrules command was successful
-if [ $? -eq 0 ]; then
-    echo "Successfully loaded audit rules."
-else
-    echo "Failed to load audit rules with augenrules."
-    exit 1
-fi
 
 echo "Audit configuration for kmod is complete."
 
