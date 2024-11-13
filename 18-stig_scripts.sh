@@ -525,14 +525,14 @@ rules=(
     "-a always,exit  -F path=/usr/sbin/usermod  -F perm=x  -F auid>=1000  -F auid!=unset  -k privileged-usermod"
     "-a always,exit  -F path=/usr/bin/chacl  -F perm=x  -F auid>=1000  -F auid!=unset  -k perm_mod"
     "-a always,exit  -F path=/usr/bin/kmod   -F perm=x  -F auid>=1000  -F auid!=unset  -F modules"
-    "-w /var/log/lastlog –p wa –k logins"
+    "-w /var/log/lastlog -p wa -k logins"
 )
 
 # Path to the audit rules file
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Create or clear the audit rules file if it doesn't exist
-if [ ! –f "$audit_rules_file" ]; then
+if [ ! -f "$audit_rules_file" ]; then
     sudo touch "$audit_rules_file"
 fi
 
