@@ -1,5 +1,6 @@
 #!/bin/bash
 # audit_config.sh
+# CIS_Linux_2.0.0 - 4.1.19
 # Define the path to the rules file
 rules_file="/etc/audit/rules.d/99-finalize.rules"
 
@@ -21,6 +22,7 @@ sudo augenrules --load
 
 # Remove deny files if they exist
 # cron.sh
+# CIS_Linux_2.0.0 - 5.1.8
 if [ -f /etc/cron.deny ]; then
     sudo rm /etc/cron.deny
     echo "/etc/cron.deny removed."
@@ -56,6 +58,7 @@ sudo chown root:root /etc/at.allow
 
 # Confirm changes
 # date_and_time.sh
+# CIS_Linux_2.0.0 - 4.1.5
 echo "Permissions and ownership set for /etc/cron.allow and /etc/at.allow."
 ls -l /etc/cron.allow /etc/at.allow
 
@@ -97,6 +100,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the audit rules file path
 # file_deletion.sh
+# CIS_Linux_2.0.0 - 4.1.15
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -131,6 +135,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the audit rules to be added or updated
 # file_system_mount.sh
+# CIS_Linux_2.0.0 - 4.1.14
 rules=(
     "-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts"
     "-a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts"
@@ -159,6 +164,7 @@ echo "Audit rules have been updated in $audit_rules_file."
 
 # Define the sysctl configuration file path
 # ICMP_redirects_arenotaccepted.sh
+# CIS_Linux_2.0.0 - 3.2.3
 sysctl_conf_file="/etc/sysctl.conf"
 
 # Backup the original sysctl.conf file if it exists
@@ -198,6 +204,7 @@ echo "Sysctl parameters have been updated and applied."
 
 # Define the sysctl configuration file path
 # ICMP_redirects.sh
+# CIS_Linux_2.0.0 - 3.2.2
 sysctl_conf_file="/etc/sysctl.conf"
 
 # Backup the original sysctl.conf file if it exists
@@ -279,7 +286,8 @@ sudo sysctl -w net.ipv4.route.flush=1
 echo "Sysctl parameters have been updated and applied."
 
 # Define the useradd defaults file path
-# INACTIVE_30.sh
+# INACTIVE_30.sh 
+# CIS_Linux_2.0.0 - 5.4.1.4
 useradd_defaults_file="/etc/default/useradd"
 
 # Backup the original useradd defaults file if it exists
@@ -306,6 +314,8 @@ echo "Operation completed."
 
 # Define the audit rules to be added or updated
 # kernel.sh
+# CIS_Linux_2.0.0 - 4.1.18
+# 
 rules=(
     "-w /sbin/insmod -p x -k modules"
     "-w /sbin/rmmod -p x -k modules"
@@ -336,6 +346,7 @@ echo "Audit rules have been updated in $audit_rules_file."
 
 # Define the audit rules file path
 # login_and_logout_events.sh
+# CIS_Linux_2.0.0 - 4.1.9
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -371,6 +382,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the audit rules file path
 # modify_ug.sh
+# CIS_Linux_2.0.0 - 4.1.6
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -408,6 +420,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the audit rules file path
 # network_environment.sh
+# CIS_Linux_2.0.0 - 4.1.7
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -446,6 +459,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the sysctl configuration file path
 # packet_redirect.sh
+# CIS_Linux_2.0.0 - 3.1.2
 sysctl_conf_file="/etc/sysctl.conf"
 
 # Backup the original sysctl.conf file if it exists
@@ -485,6 +499,7 @@ echo "Sysctl parameters have been updated and applied."
 
 # Define the login.defs file path
 # PASS_MIN_DAYS.sh
+# CIS_Linux_2.0.0 - 5.4.1.2
 login_defs_file="/etc/login.defs"
 
 # Backup the original login.defs file if it exists
@@ -513,6 +528,7 @@ grep "^PASS_MIN_DAYS" "$login_defs_file"
 
 # Define the login.defs file path
 # password_expiration_365.sh
+# CIS_Linux_2.0.0 - 5.4.1.1
 login_defs_file="/etc/login.defs"
 
 # Backup the original login.defs file if it exists
@@ -541,6 +557,7 @@ grep "^PASS_MAX_DAYS" "$login_defs_file"
 
 # Define the cron directories
 # permission_cron.sh
+# CIS_Linux_2.0.0 - 5.1.4, 5.1.5, 5.1.6, 5.1.7
 cron_dirs=(
     "/etc/cron.hourly"
     "/etc/cron.daily"
@@ -575,6 +592,7 @@ done
 
 # Define the audit rules file path
 # permission_modification.sh
+# CIS_Linux_2.0.0 - 4.1.11
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -612,6 +630,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the crontab file path
 # permissions_crontab.sh
+# CIS_Linux_2.0.0 - 5.1.2
 crontab_file="/etc/crontab"
 
 # Set ownership to root:root
@@ -631,6 +650,7 @@ sudo find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod 
 
 # Remediation is applicable only in certain platforms
 # permit_root_login.sh
+# CIS_Linux_2.0.0 - 5.2.10
 if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
 
 if [ -e "/etc/ssh/sshd_config" ] ; then
@@ -654,7 +674,8 @@ else
 fi
 
 # Define the sysctl configuration file path
-# reverse_path_filtering.sh
+# reverse_path_filtering.sh 
+# CIS_Linux_2.0.0 - 3.2.7
 sysctl_conf_file="/etc/sysctl.conf"
 
 # Backup the original sysctl.conf file if it exists
@@ -688,7 +709,8 @@ sudo sysctl -w net.ipv4.route.flush=1
 echo "Sysctl parameters have been updated and applied."
 
 # Define the sysctl configuration file path
-# routed_packets.sh
+# routed_packets.sh 
+# CIS_Linux_2.0.0 - 3.2.1
 sysctl_conf_file="/etc/sysctl.conf"
 
 # Backup the original sysctl.conf file if it exists
@@ -728,6 +750,7 @@ echo "Sysctl parameters have been updated and applied."
 
 # Define the audit rules file path
 # session_initiation.sh
+# CIS_Linux_2.0.0 - 4.1.10
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -762,6 +785,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the SSH configuration file path
 # ssh_X11.sh
+# CIS_Linux_2.0.0 - 5.2.6
 sshd_config_file="/etc/ssh/sshd_config"
 
 # Backup the original sshd_config file if it exists
@@ -789,6 +813,7 @@ echo "SSH service restarted. X11 forwarding is now disabled."
 
 # Define the sysctl configuration file 
 # suspicious_packets.sh
+# CIS_Linux_2.0.0 - 3.2.4
 sysctl_conf_file="/etc/sysctl.conf"
 
 # Backup the original sysctl.conf file if it exists
@@ -823,6 +848,7 @@ echo "Sysctl parameters have been updated and applied."
 
 # Define the path to the audit.rules file
 # system_administration.sh
+# CIS_Linux_2.0.0 - 4.1.16
 audit_rules_file="/etc/audit/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -853,6 +879,7 @@ echo "Audit rules have been updated in $audit_rules_file."
 
 # Define the audit rules file path
 # system_Mandatory.sh
+# CIS_Linux_2.0.0 - 4.1.8
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
@@ -902,6 +929,7 @@ echo "Audit rules have been updated and auditd service restarted."
 
 # Define the audit rules file path
 # unsuccessful_unauthorized.sh
+# CIS_Linux_2.0.0 - 4.1.12
 audit_rules_file="/etc/audit/rules.d/audit.rules"
 
 # Backup the original audit.rules file if it exists
