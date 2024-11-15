@@ -1,6 +1,6 @@
 #!/bin/bash
 # Remediation is applicable only in certain platforms
-# V-230244.sh
+# V-230244
 if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
 
 var_sshd_set_keepalive='1'
@@ -27,22 +27,22 @@ else
 fi
 
 # Uncomment StrictModes in sshd_config
-# V-230288.sh
+# V-230288
 sudo sed -i 's/^#StrictModes yes/StrictModes yes/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # Uncomment IgnoreUserKnownHosts in sshd_config and set it to yes
-# V-230290.sh
+# V-230290
 sudo sed -i 's/^#IgnoreUserKnownHosts no/IgnoreUserKnownHosts yes/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # Uncomment KerberosAuthentication in sshd_config and set it to no
-# V-230291.sh
+# V-230291
 sudo sed -i 's/^#KerberosAuthentication no/KerberosAuthentication no/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # Remediation is applicable only in certain platforms
-# V-230296.sh
+# V-230296
 if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
 
 if [ -e "/etc/ssh/sshd_config" ] ; then
@@ -66,7 +66,7 @@ else
 fi
 
 # Define the configuration file
-# V-230313.sh
+# V-230313
 LIMITS_FILE="/etc/security/limits.conf"
 LIMITS_DIR="/etc/security/limits.d"
 CONF_FILE="disable_coredumps.conf"
@@ -99,7 +99,7 @@ sudo augenrules --load
 echo "Core dumps have been disabled for all users."
 
 # Remediation is applicable only in certain platforms
-# V-230314.sh
+# V-230314
 if rpm --quiet -q systemd; then
 
 if [ -e "/etc/systemd/coredump.conf" ] ; then
@@ -122,7 +122,7 @@ else
 fi
 
 # Remediation is applicable only in certain platforms
-# V-230315.sh
+# V-230315
 if rpm --quiet -q systemd; then
 
 if [ -e "/etc/systemd/coredump.conf" ] ; then
@@ -145,7 +145,7 @@ else
 fi
 
 # Remediation is applicable only in certain platforms
-# V-230330.sh
+# V-230330
 if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
 
 if [ -e "/etc/ssh/sshd_config" ] ; then
@@ -169,7 +169,7 @@ else
 fi
 
 # Uncomment deny and fail_interval in faillock.conf and set their values
-# V-230333_V-230345.sh
+# V-230333_V-230345
 sudo sed -i 's/^# deny = 3/deny = 3/' /etc/security/faillock.conf
 sudo sed -i 's/^# fail_interval = 900/fail_interval = 900/' /etc/security/faillock.conf
 sudo sed -i 's/^# unlock_time = 600/unlock_time = 0/' /etc/security/faillock.conf
@@ -178,7 +178,7 @@ sudo sed -i 's/^# audit/audit/' /etc/security/faillock.conf
 sudo sed -i 's/^# even_deny_root/even_deny_root/' /etc/security/faillock.conf
 
 # Define the limits.conf file path
-# V-230346.sh
+# V-230346
 limits_conf_file="/etc/security/limits.conf"
 new_line="* hard maxlogins 10"
 
@@ -203,7 +203,7 @@ fi
 echo "Changes have been applied."
 
 # Define the shells configuration file path
-# V-230350.sh
+# V-230350
 shells_file="/etc/shells"
 
 # Backup the original shells file if it exists
@@ -226,7 +226,7 @@ fi
 echo "Operation completed."
 
 # Uncomment ucredit in pwquality.conf and set it to -1
-# V-230357_V-230363.sh
+# V-230357_V-230363
 sudo sed -i 's/^# ucredit = 0/ucredit = -1/' /etc/security/pwquality.conf
 sudo sed -i 's/^# lcredit = 0/lcredit = -1/' /etc/security/pwquality.conf
 sudo sed -i 's/^# dcredit = 0/dcredit = -1/' /etc/security/pwquality.conf
@@ -236,12 +236,12 @@ sudo sed -i 's/^# minclass = 0/minclass = 4/' /etc/security/pwquality.conf
 sudo sed -i 's/^# difok = 1/difok = 8/' /etc/security/pwquality.conf
 
 # Change PASS_MIN_DAYS from 0 to 1 in login.defs
-# V-230365_V-230366.sh
+# V-230365_V-230366
 sudo sed -i 's/^PASS_MIN_DAYS\s\+[0-9]\+/PASS_MIN_DAYS   1/' /etc/login.defs
 sudo sed -i 's/^PASS_MAX_DAYS\s\+[0-9]\+/PASS_MAX_DAYS   60/' /etc/login.defs
 
 # Define the line to add or modify
-# V-230368.sh
+# V-230368
 line="password requisite pam_pwhistory.so use_authtok remember=5 retry=3"
 
 # Check if the line already exists in the file
@@ -254,20 +254,20 @@ else
 fi
 
 # Uncomment minlen in pwquality.conf and set it to 15
-# V-230369.sh
+# V-230369
 sudo sed -i 's/^# minlen = 8/minlen = 15/' /etc/security/pwquality.conf
 
 # Change PASS_MIN_LEN from 5 to 15 in login.defs
-# V-230370.sh
+# V-230370
 sudo sed -i 's/^PASS_MIN_LEN\s\+[0-9]\+/PASS_MIN_LEN    15/' /etc/login.defs
 
 # Uncomment ocredit in pwquality.conf and set it to -1
-# V-230375_V-230377.sh
+# V-230375_V-230377
 sudo sed -i 's/^# ocredit = 0/ocredit = -1/' /etc/security/pwquality.conf
 sudo sed -i 's/^# dictcheck = 1/dictcheck=1/' /etc/security/pwquality.conf
 
 # Define the desired value for FAIL_DELAY
-# V-230378.sh
+# V-230378
 desired_value=4
 
 # Check if FAIL_DELAY is already defined in login.defs
@@ -280,7 +280,7 @@ else
 fi
 
 # Define the PAM configuration file path
-# V-230381.sh
+# V-230381
 pam_postlogin_file="/etc/pam.d/postlogin"
 new_line="session required pam_lastlog.so showfailed"
 
@@ -305,16 +305,16 @@ fi
 echo "Operation completed."
 
 # Uncomment PrintLastLog in sshd_config
-# V-230382.sh
+# V-230382
 sudo sed -i 's/^#PrintLastLog yes/PrintLastLog yes/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # Update UMASK in login.defs to 077
-# V-230383.sh
+# V-230383
 sudo sed -i 's/^UMASK.*$/UMASK 077/' /etc/login.defs
 
 # Define the audit rules to be added or updated
-# V-230386.sh
+# V-230386
 rules=(
     "-a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -k execpriv"
     "-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -k execpriv"
@@ -343,7 +343,7 @@ sudo augenrules --load
 echo "Audit rules have been updated."
 
 # Define the configuration file
-# V-230390.sh
+# V-230390
 CONFIG_FILE="/etc/audit/auditd.conf"
 
 # Check if the configuration file exists
@@ -369,7 +369,7 @@ sudo augenrules --load
 echo "auditd service restarted."
 
 # Define the configuration file
-# V-230392.sh
+# V-230392
 CONFIG_FILE="/etc/audit/auditd.conf"
 
 # Check if the configuration file exists
@@ -395,7 +395,7 @@ sudo augenrules --load
 echo "Audit configuration updated and service reloaded."
 
 # Define the configuration file
-# V-230394.sh
+# V-230394
 CONFIG_FILE="/etc/audit/auditd.conf"
 
 # Check if the configuration file exists
@@ -421,7 +421,7 @@ sudo augenrules --load
 echo "Audit configuration updated and service reloaded."
 
 # Define the audit rules to be added or updated
-# V-230402_to_V-230427.sh
+# V-230402_to_V-230427
 rules=(
     "-e 2"
     "--loginuid-immutable"
@@ -468,7 +468,7 @@ done
 sudo augenrules --load
 
 # Define the audit rules to be added or updated
-# V-230428_to_V-230467.sh
+# V-230428_to_V-230467
 rules=(
     "-a always,exit -F path=/usr/sbin/postqueue -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update"
     "-a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update"
@@ -523,7 +523,7 @@ done
 sudo augenrules --load
 
 # Define the audit rules file
-# V-230465.sh
+# V-230465
 AUDIT_RULES_FILE="/etc/audit/rules.d/audit.rules"
 
 # Check if the audit rules file exists
@@ -546,7 +546,7 @@ sudo augenrules --load
 echo "Audit configuration for kmod is complete."
 
 # Path to the auditd.conf file
-# V-230483.sh
+# V-230483
 auditd_config_file="/etc/audit/auditd.conf"
 
 # Backup the original auditd.conf file
@@ -560,7 +560,7 @@ sudo augenrules --load
 echo "Updated space_left to 25% in $auditd_config_file."
 
 # Define the chrony configuration file path
-# V-230485_V-230486.sh
+# V-230485_V-230486
 chrony_conf_file="/etc/chrony.conf"
 new_lines="port 0\ncmdport 0"
 
@@ -591,7 +591,7 @@ sudo systemctl restart chronyd
 echo "Chronyd service restarted. Configuration changes applied."
 
 # Path to the sshd_config file
-# V-230527.sh
+# V-230527
 sshd_config_file="/etc/ssh/sshd_config"
 
 # Check if the sshd_config file exists
@@ -612,7 +612,7 @@ sudo systemctl reload sshd
 echo "RekeyLimit has been set to 1G 1h in $sshd_config_file."
 
 # Path to the sshd_config file
-# V-230555.sh
+# V-230555
 sshd_config_file="/etc/ssh/sshd_config"
 
 # Backup the original sshd_config file
@@ -627,7 +627,7 @@ sudo systemctl reload sshd
 echo "Uncommented and set X11Forwarding to no in $sshd_config_file."
 
 # Path to the sshd_config file
-# V-230556.sh
+# V-230556
 sshd_config_file="/etc/ssh/sshd_config"
 
 # Uncomment and set X11UseLocalhost to yes
@@ -639,7 +639,7 @@ sudo systemctl reload sshd
 echo "Uncommented and set X11UseLocalhost to yes in $sshd_config_file."
 
 # Remediation is applicable only in certain platforms
-# V-244540_V-244541.sh
+# V-244540_V-244541
 if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
 
 if [ -f /usr/bin/authselect ]; then
@@ -722,5 +722,5 @@ echo "All changes have been applied successfully."
 
 # V-230471
 sudo chmod 0640 /etc/audit/rules.d/audit.rules
-sudo chmod 0640 /etc/audit/rules.d/audit.rules
+sudo chmod 0640 /etc/audit/rules.d/99-finalize.rules
 sudo chmod 0640 /etc/audit/auditd.conf
