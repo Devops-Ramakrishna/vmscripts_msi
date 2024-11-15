@@ -249,6 +249,7 @@ echo "Sysctl parameters have been updated and applied."
 
 # Define the sysctl configuration file path
 # ICMP.sh
+# CIS_Linux_2.0.0 - 3.2.2
 sysctl_conf_file="/etc/sysctl.conf"
 
 # Backup the original sysctl.conf file if it exists
