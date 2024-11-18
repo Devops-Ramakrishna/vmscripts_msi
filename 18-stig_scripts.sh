@@ -240,6 +240,14 @@ sudo sed -i 's/^# difok = 1/difok = 8/' /etc/security/pwquality.conf
 sudo sed -i 's/^PASS_MIN_DAYS\s\+[0-9]\+/PASS_MIN_DAYS   1/' /etc/login.defs
 sudo sed -i 's/^PASS_MAX_DAYS\s\+[0-9]\+/PASS_MAX_DAYS   60/' /etc/login.defs
 
+# V-230364
+sudo chage -m 1 cpeinfra
+sudo chage -m 1 root
+
+# V-230367
+sudo chage -M 60 cpeinfra
+sudo chage -M 60 root
+
 # Define the line to add or modify
 # V-230368
 line="password requisite pam_pwhistory.so use_authtok remember=5 retry=3"
