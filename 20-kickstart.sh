@@ -636,6 +636,58 @@ sudo chmod 0640 /etc/audit/rules.d/audit.rules
 sudo chmod 0640 /etc/audit/rules.d/99-finalize.rules
 sudo chmod 0640 /etc/audit/auditd.conf
 
+#Console_Banner
+
+#!/bin/bash
+
+# Define the banner text
+BANNER_TEXT=" - NOTICE -\n\nWarning: This is a monitored device or computer system. Illegal and/or unauthorized use of this device and any related service is strictly prohibited and appropriate legal action will be taken, including without limitation civil, criminal and injunctive redress.\nYour use of this device and any related service constitutes your consent to be bound by all terms, conditions, and notices associated with its use including consent to all monitoring and disclosure provisions."
+
+# Write the banner text to /etc/issue
+echo -e "$BANNER_TEXT" | sudo tee /etc/issue > /dev/null
+
+# Optionally, print a message indicating success
+echo "Banner added to /etc/issue." 
+
+# Putty_Banner
+
+#!/bin/bash
+
+# Step 1: Create the banner file with specified content
+BANNER_FILE="/etc/banner"
+
+# Create the banner file with the specified message
+cat <<EOL | sudo tee $BANNER_FILE > /dev/null
+ - NOTICE -
+
+Warning: This is a monitored device or computer system. Illegal and/or
+unauthorized use of this device and any related service is strictly
+prohibited and appropriate legal action will be taken, including
+without limitation civil, criminal and injunctive redress.
+Your use of this device and any related service constitutes
+your consent to be bound by all terms, conditions, and notices
+associated with its use including consent to all monitoring and disclosure provisions.
+EOL
+
+# Step 2: Update the sshd_config to include the Banner directive
+SSHD_CONFIG="/etc/ssh/sshd_config"
+
+# Backup the original sshd_config file
+sudo cp $SSHD_CONFIG "$SSHD_CONFIG.bak"
+
+# Check if Banner directive already exists; if so, update it; otherwise, add it
+if grep -q "^#*Banner" $SSHD_CONFIG; then
+    sudo sed -i "s|^#*Banner.*|Banner $BANNER_FILE|" $SSHD_CONFIG
+else
+    echo "Banner $BANNER_FILE" | sudo tee -a $SSHD_CONFIG > /dev/null
+fi
+
+# Restart SSH service to apply changes
+sudo systemctl restart sshd
+
+# Print success message
+echo "SSH banner has been set to: $BANNER_FILE"
+
 # twistlock scripts
 
 #!/bin/bash
