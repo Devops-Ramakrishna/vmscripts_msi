@@ -1,30 +1,8 @@
 #!/bin/bash
 # Remediation is applicable only in certain platforms
 # V-230244
-if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
-
-var_sshd_set_keepalive='1'
-
-
-if [ -e "/etc/ssh/sshd_config" ] ; then
-
-    LC_ALL=C sed -i "/^\s*ClientAliveCountMax\s\+/Id" "/etc/ssh/sshd_config"
-else
-    touch "/etc/ssh/sshd_config"
-fi
-# make sure file has newline at the end
-sed -i -e '$a\' "/etc/ssh/sshd_config"
-
-cp "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.bak"
-# Insert at the beginning of the file
-printf '%s\n' "ClientAliveCountMax $var_sshd_set_keepalive" > "/etc/ssh/sshd_config"
-cat "/etc/ssh/sshd_config.bak" >> "/etc/ssh/sshd_config"
-# Clean up after ourselves.
-rm "/etc/ssh/sshd_config.bak"
-
-else
-    >&2 echo 'Remediation is not applicable, nothing was done'
-fi
+sudo sed -i 's/^#ClientAliveCountMax .*/ClientAliveCountMax 1/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
 
 # Uncomment StrictModes in sshd_config
 # V-230288
@@ -43,27 +21,8 @@ sudo systemctl restart sshd
 
 # Remediation is applicable only in certain platforms
 # V-230296
-if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
-
-if [ -e "/etc/ssh/sshd_config" ] ; then
-
-    LC_ALL=C sed -i "/^\s*PermitRootLogin\s\+/Id" "/etc/ssh/sshd_config"
-else
-    touch "/etc/ssh/sshd_config"
-fi
-# make sure file has newline at the end
-sed -i -e '$a\' "/etc/ssh/sshd_config"
-
-cp "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.bak"
-# Insert at the beginning of the file
-printf '%s\n' "PermitRootLogin no" > "/etc/ssh/sshd_config"
-cat "/etc/ssh/sshd_config.bak" >> "/etc/ssh/sshd_config"
-# Clean up after ourselves.
-rm "/etc/ssh/sshd_config.bak"
-
-else
-    >&2 echo 'Remediation is not applicable, nothing was done'
-fi
+sudo sed -i 's/^#*PermitRootLogin.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
 
 # Define the configuration file
 # V-230313
@@ -100,73 +59,16 @@ echo "Core dumps have been disabled for all users."
 
 # Remediation is applicable only in certain platforms
 # V-230314
-if rpm --quiet -q systemd; then
-
-if [ -e "/etc/systemd/coredump.conf" ] ; then
-
-    LC_ALL=C sed -i "/^\s*Storage\s*=\s*/Id" "/etc/systemd/coredump.conf"
-else
-    touch "/etc/systemd/coredump.conf"
-fi
-# make sure file has newline at the end
-sed -i -e '$a\' "/etc/systemd/coredump.conf"
-
-cp "/etc/systemd/coredump.conf" "/etc/systemd/coredump.conf.bak"
-# Insert at the end of the file
-printf '%s\n' "Storage=none" >> "/etc/systemd/coredump.conf"
-# Clean up after ourselves.
-rm "/etc/systemd/coredump.conf.bak"
-
-else
-    >&2 echo 'Remediation is not applicable, nothing was done'
-fi
+sudo sed -i 's/^#*Storage=.*/Storage=none/' /etc/systemd/coredump.conf
 
 # Remediation is applicable only in certain platforms
 # V-230315
-if rpm --quiet -q systemd; then
-
-if [ -e "/etc/systemd/coredump.conf" ] ; then
-
-    LC_ALL=C sed -i "/^\s*ProcessSizeMax\s*=\s*/Id" "/etc/systemd/coredump.conf"
-else
-    touch "/etc/systemd/coredump.conf"
-fi
-# make sure file has newline at the end
-sed -i -e '$a\' "/etc/systemd/coredump.conf"
-
-cp "/etc/systemd/coredump.conf" "/etc/systemd/coredump.conf.bak"
-# Insert at the end of the file
-printf '%s\n' "ProcessSizeMax=0" >> "/etc/systemd/coredump.conf"
-# Clean up after ourselves.
-rm "/etc/systemd/coredump.conf.bak"
-
-else
-    >&2 echo 'Remediation is not applicable, nothing was done'
-fi
+sudo sed -i 's/^#*ProcessSizeMax=.*/ProcessSizeMax=0/' /etc/systemd/coredump.conf
 
 # Remediation is applicable only in certain platforms
 # V-230330
-if [ ! -f /.dockerenv ] && [ ! -f /run/.containerenv ]; then
-
-if [ -e "/etc/ssh/sshd_config" ] ; then
-
-    LC_ALL=C sed -i "/^\s*PermitUserEnvironment\s\+/Id" "/etc/ssh/sshd_config"
-else
-    touch "/etc/ssh/sshd_config"
-fi
-# make sure file has newline at the end
-sed -i -e '$a\' "/etc/ssh/sshd_config"
-
-cp "/etc/ssh/sshd_config" "/etc/ssh/sshd_config.bak"
-# Insert at the beginning of the file
-printf '%s\n' "PermitUserEnvironment no" > "/etc/ssh/sshd_config"
-cat "/etc/ssh/sshd_config.bak" >> "/etc/ssh/sshd_config"
-# Clean up after ourselves.
-rm "/etc/ssh/sshd_config.bak"
-
-else
-    >&2 echo 'Remediation is not applicable, nothing was done'
-fi
+sudo sed -i 's/^#*PermitUserEnvironment=.*/PermitUserEnvironment no/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
 
 # Uncomment deny and fail_interval in faillock.conf and set their values
 # V-230333_V-230345
