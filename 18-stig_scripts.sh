@@ -67,7 +67,7 @@ sudo sed -i 's/^#*ProcessSizeMax=.*/ProcessSizeMax=0/' /etc/systemd/coredump.con
 
 # Remediation is applicable only in certain platforms
 # V-230330
-sudo sed -i 's/^#*PermitUserEnvironment=.*/PermitUserEnvironment no/' /etc/ssh/sshd_config
+sudo sed -i 's/^#PermitUserEnvironment no/PermitUserEnvironment no/' /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # Uncomment deny and fail_interval in faillock.conf and set their values
