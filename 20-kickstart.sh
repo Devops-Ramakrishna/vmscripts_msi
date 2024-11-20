@@ -3,27 +3,22 @@
 # stig scripts
 # V-230244
 sudo sed -i 's/^#ClientAliveCountMax .*/ClientAliveCountMax 1/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
 
 # Uncomment StrictModes in sshd_config
 # V-230288
 sudo sed -i 's/^#StrictModes yes/StrictModes yes/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
 
 # Uncomment IgnoreUserKnownHosts in sshd_config and set it to yes
 # V-230290
 sudo sed -i 's/^#IgnoreUserKnownHosts no/IgnoreUserKnownHosts yes/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
 
 # Uncomment KerberosAuthentication in sshd_config and set it to no
 # V-230291
 sudo sed -i 's/^#KerberosAuthentication no/KerberosAuthentication no/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
 
 # Remediation is applicable only in certain platforms
 # V-230296
 sudo sed -i 's/^#*PermitRootLogin.*$/PermitRootLogin no/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
 
 # Define the configuration file
 # V-230313
@@ -69,7 +64,6 @@ sudo sed -i 's/^#*ProcessSizeMax=.*/ProcessSizeMax=0/' /etc/systemd/coredump.con
 # Remediation is applicable only in certain platforms
 # V-230330
 sudo sed -i 's/^#PermitUserEnvironment no/PermitUserEnvironment no/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
 
 # Uncomment deny and fail_interval in faillock.conf and set their values
 # V-230333_V-230345
@@ -218,7 +212,6 @@ echo "Operation completed."
 # Uncomment PrintLastLog in sshd_config
 # V-230382
 sudo sed -i 's/^#PrintLastLog yes/PrintLastLog yes/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
 
 # Update UMASK in login.defs to 077
 # V-230383
@@ -511,14 +504,8 @@ if [ ! -f "$sshd_config_file" ]; then
     exit 1
 fi
 
-# Backup the original sshd_config file
-sudo cp "$sshd_config_file" "$sshd_config_file.bak"
-
 # Uncomment and update RekeyLimit
 sudo sed -i 's/^#RekeyLimit.*$/RekeyLimit 1G 1h/' "$sshd_config_file"
-
-# Reload the SSH daemon to apply changes
-sudo systemctl reload sshd
 
 echo "RekeyLimit has been set to 1G 1h in $sshd_config_file."
 
@@ -526,14 +513,8 @@ echo "RekeyLimit has been set to 1G 1h in $sshd_config_file."
 # V-230555
 sshd_config_file="/etc/ssh/sshd_config"
 
-# Backup the original sshd_config file
-sudo cp "$sshd_config_file" "$sshd_config_file.bak"
-
 # Uncomment and set X11Forwarding to no
 sudo sed -i 's/^#\s*X11Forwarding no/X11Forwarding no/' "$sshd_config_file"
-
-# Reload the SSH daemon to apply changes
-sudo systemctl reload sshd
 
 echo "Uncommented and set X11Forwarding to no in $sshd_config_file."
 
@@ -543,9 +524,6 @@ sshd_config_file="/etc/ssh/sshd_config"
 
 # Uncomment and set X11UseLocalhost to yes
 sudo sed -i 's/^#\s*X11UseLocalhost.*/X11UseLocalhost yes/' "$sshd_config_file"
-
-# Reload the SSH daemon to apply changes
-sudo systemctl reload sshd
 
 echo "Uncommented and set X11UseLocalhost to yes in $sshd_config_file."
 
@@ -647,7 +625,7 @@ BANNER_TEXT=" - NOTICE -\n\nWarning: This is a monitored device or computer syst
 echo -e "$BANNER_TEXT" | sudo tee /etc/issue > /dev/null
 
 # Optionally, print a message indicating success
-echo "Banner added to /etc/issue." 
+echo "Banner added to /etc/issue."
 
 # Putty_Banner
 
@@ -1287,8 +1265,8 @@ sudo find /var/log -type f -exec chmod g-wx,o-rwx "{}" + -o -type d -exec chmod 
 # Remediation is applicable only in certain platforms
 # permit_root_login.sh
 # CIS_Linux_2.0.0 - 5.2.10
-sudo sed -i 's/^#*PermitRootLogin.*$/PermitRootLogin no/' /etc/ssh/sshd_config
-sudo systemctl restart sshd
+#sudo sed -i 's/^#*PermitRootLogin.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+#sudo systemctl restart sshd
 
 # Define the sysctl configuration file path
 # reverse_path_filtering.sh
@@ -1403,30 +1381,7 @@ echo "Audit rules have been updated and auditd service restarted."
 # Define the SSH configuration file path
 # ssh_X11.sh
 # CIS_Linux_2.0.0 - 5.2.6
-sshd_config_file="/etc/ssh/sshd_config"
-
-# Backup the original sshd_config file if it exists
-if [ -f "$sshd_config_file" ]; then
-    sudo cp "$sshd_config_file" "$sshd_config_file.bak"
-    echo "Backup of $sshd_config_file created."
-else
-    echo "$sshd_config_file does not exist."
-    exit 1
-fi
-
-# Update X11Forwarding setting to no
-if grep -q "^X11Forwarding" "$sshd_config_file"; then
-    sudo sed -i 's/^X11Forwarding yes/X11Forwarding no/' "$sshd_config_file"
-    echo "Updated X11Forwarding from yes to no."
-else
-    echo "X11Forwarding line not found. Adding it as 'X11Forwarding no'."
-    echo "X11Forwarding no" | sudo tee -a "$sshd_config_file" > /dev/null
-fi
-
 # Restart SSH service to apply changes
-sudo systemctl restart sshd
-
-echo "SSH service restarted. X11 forwarding is now disabled."
 
 # Define the sysctl configuration file
 # suspicious_packets.sh
@@ -1579,4 +1534,3 @@ done
 # Reload the auditd service to apply changes
 sudo augenrules --load
 echo "Audit rules have been updated and auditd service restarted."
-
