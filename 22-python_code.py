@@ -40,7 +40,7 @@ def process_text_to_excel(input_file, output_file):
 
 
 # Usage example:
-input_file = "old.txt"  # Replace with the path to your text file
-output_file = "old_vul.xlsx"  # Replace with the desired output path
+input_file = "Desktop/Anirudh.txt"  # Replace with the path to your text file
+output_file = "Desktop/new_vul.xlsx"  # Replace with the desired output path
 
 process_text_to_excel(input_file, output_file)
